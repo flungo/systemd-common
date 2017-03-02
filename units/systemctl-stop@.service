@@ -1,0 +1,12 @@
+# Stop a systemd service
+#
+# Can be used in conjunction with a timer to stop a systemd service on a timer.
+#
+# The service name should be escaped using `systemd-escape` and given as the instance for this service.
+
+[Unit]
+Description=Stop %I systemd service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl stop %I
