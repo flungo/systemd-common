@@ -1,6 +1,6 @@
 # systemd-common
 
-Common dropins for systemd units.
+Common components for use with systemd.
 
 ## Installation
 
@@ -35,3 +35,31 @@ The `restart-policy` dropins that are provided are:
 - `restart-on-watchdog` restart the service when its terminated by the watchdog timer.
 
 For more details on the possible restart policies, reffer to the [systemd.service Restart documentation](https://www.freedesktop.org/software/systemd/man/systemd.service.html#Restart=).
+
+## Units
+
+Units provide services which can be used with timers, hooks or independently. To install the units they should be symbolically linked to from the `/etc/systemd/system` directory.
+
+### systemctl
+
+Units which can be used to control services by stopping, starting and restarting them have been provided. These are best used with timers so that these tasks can be performed on a schedule. The units provided are:
+
+- `systemctl-restart@.service`
+- `systemctl-start@.service`
+- `systemctl-stop@.service`
+
+For each unit, the instance name should be the escaped pattern of the service for the action to be performed on, as escaped by `systemd-escape`. For example to restart the `nginx@example.com` service daily, the following timer unit can be created as `systemctl-restart@nginx\x40example.com.timer`:
+
+```
+[Unit]
+Description=Restart nginx@example.com daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+**Note:** Make sure that when creating files and running commands that the `\` character is not treated as a shell escape character by including it in single quoted strings or by escaping the backslash.
