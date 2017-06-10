@@ -1,0 +1,30 @@
+#!/bin/bash -e
+#
+# Email the status of a systemd unit using sendmail.
+
+usage() {
+  echo "Usage: $0 RECIPIENT PATTERN"
+  echo
+  echo "  RECIPIENT   The email address of the recipient."
+  echo "  PATTERN     The pattern for units to report the status on."
+}
+
+if [ $# -lt 2 ]; then
+  >&2 usage
+  exit 1
+fi
+
+if [ -z "$1" ]; then
+  >&2 echo "Recipient must be specified"
+  exit 1
+fi
+
+/usr/bin/sendmail -t <<STATUSMAIL
+To: $1
+From: systemd <root@$HOSTNAME>
+Subject: $2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+
+$(systemctl status --full "$2" 2>&1)
+STATUSMAIL

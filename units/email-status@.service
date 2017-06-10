@@ -1,0 +1,12 @@
+[Unit]
+Description=status email for %I to user
+
+[Service]
+Type=oneshot
+User=nobody
+Group=systemd-journal
+
+ExecStart=/srv/common/scripts/email-status ${RECIPIENT_EMAIL} %I
+
+# Send emails to root by default
+Environment='RECIPIENT_EMAIL=root'

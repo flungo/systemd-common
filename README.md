@@ -4,11 +4,13 @@ Common components for use with systemd.
 
 ## Installation
 
-All you need to do is clone this repo somewhere onto your disk. Typically, I clone this into my `/srv` directory.
+Installation of these common files requires that the repo is copied to the disk. To ensure that all units work as expected it is recommended that the repository is cloned into `/srv/common`.
 
 ```
 git clone https://github.com/flungo/systemd-common.git /srv/common
 ```
+
+Individual files can then be installed using symbolic links as described in the relevant sections below.
 
 ## Dropins
 
@@ -35,6 +37,10 @@ The `restart-policy` dropins that are provided are:
 - `restart-on-watchdog` restart the service when its terminated by the watchdog timer.
 
 For more details on the possible restart policies, reffer to the [systemd.service Restart documentation](https://www.freedesktop.org/software/systemd/man/systemd.service.html#Restart=).
+
+### onfailure-email-status
+
+Using this dropin will result in an email being sent using the `email-status@.service` unit when the unit which this dropin is used with fails. See the unit details to be able to configure the email address which the notification is sent to.
 
 ## Units
 
@@ -63,3 +69,24 @@ WantedBy=timers.target
 ```
 
 **Note:** Make sure that when creating files and running commands that the `\` character is not treated as a shell escape character by including it in single quoted strings or by escaping the backslash.
+
+### email-status
+
+A unit which emails the status of another services using the email-status script is included. When run with a service pattern escaped with `systemd-escape` as the instance name, the status of matching services are sent in an email to the email address specified by the `RECIPIENT_EMAIL` environment variable. By default, the status is sent to `root`. In order to have the message delivered to another user or an email address (providing the MTA on the host machine is configured to deliver to that user and/or domain), a dropin which sets the `RECIPIENT_EMAIL` environment variable should be added. A template dropin for this has been provided as `units/email-status@.service.d/templates/recipient-email.conf`.
+
+By using instance dropins, a different email can be used for specific services. For example, to mail the `webmaster` user when `nginx.service` fails, then a dropin setting the `RECIPIENT_EMAIL` environment variable can be placed in `/etc/system/systemd/email-status@nginx.service.d/`.
+
+## scripts
+
+In order to assist with some units, scripts have been provided. These are expected to exist within `/srv/common/scripts/` and so if this repo has been installed elsewhere, it will be required to make modified copies of the units provided.
+
+### email-status
+
+The `email-status` script sends an email to the provided address containing the status of the services which match the pattern provided to the email address provided. It uses the `sendmail` application to send the email and so requires that this is installed and configured correctly. This is designed to be used with [`OnFailure=`](https://www.freedesktop.org/software/systemd/man/systemd.unit.html#OnFailure=) (and [a dropin](#onfailure-email-status) is provided to assist with this) but can also be setup with a timer to regularly send status updates.
+
+```
+email-status RECIPIENT PATTERN
+```
+
+- **RECIPIENT** The email address of the recipient.
+- **PATTERN** The pattern for units to report the status on.
