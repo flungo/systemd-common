@@ -24,19 +24,21 @@ ln -s /srv/common/dropins/bar.conf foo.service.d/bar.conf
 
 Documented in this README, are the types and variants for dropins. Within each group, its recomended that they are linked with the same name, allowing them to be overriden by instances (i.e. the name that they are linked as should be descriptive of what they configure but not how its configured). The title of each section denotes the suggested name although you may wish to prepend numbers so that you can order the dropins within the service. Reffer to the [systemd.unit documentation](https://www.freedesktop.org/software/systemd/man/systemd.unit.html) for more information on dropins and how they work.
 
-### restart-policy
+### restart-policy.conf
 
-The `restart-policy` dropins that are provided are:
+The `restart-policy.conf` dropins that are provided are:
 
-- `restart-no` never restart the service when it stops.
-- `restart-always` always restart the service when it stops.
-- `restart-on-success` restart the service when it terminates successfully.
-- `restart-on-failure` restart the service when it terminates with any failure condition.
-- `restart-on-abnormal` restart the service when it terminates abnormally (unclean signal, timeout or watchdog but not an unclean exit code).
-- `restart-on-abort` restart the service when its aborted by a signal.
-- `restart-on-watchdog` restart the service when its terminated by the watchdog timer.
+- `restart-no.conf` never restart the service when it stops.
+- `restart-always.conf` always restart the service when it stops.
+- `restart-on-success.conf` restart the service when it terminates successfully.
+- `restart-on-failure.conf` restart the service when it terminates with any failure condition.
+- `restart-on-abnormal.conf` restart the service when it terminates abnormally (unclean signal, timeout or watchdog but not an unclean exit code).
+- `restart-on-abort.conf` restart the service when its aborted by a signal.
+- `restart-on-watchdog.conf` restart the service when its terminated by the watchdog timer.
 
-For more details on the possible restart policies, reffer to the [systemd.service Restart documentation](https://www.freedesktop.org/software/systemd/man/systemd.service.html#Restart=).
+All of the provided policies set `RestartSec=5` so that the service will sleep for 5 seconds between restarts.
+
+For more details on the possible restart policies, refer to the [systemd.service Restart documentation](https://www.freedesktop.org/software/systemd/man/systemd.service.html#Restart=).
 
 ### onfailure-email-status
 
