@@ -24,17 +24,21 @@ ln -s /srv/common/dropins/bar.conf foo.service.d/bar.conf
 
 Documented in this README, are the types and variants for dropins. Within each group, its recomended that they are linked with the same name, allowing them to be overriden by instances (i.e. the name that they are linked as should be descriptive of what they configure but not how its configured). The title of each section denotes the suggested name although you may wish to prepend numbers so that you can order the dropins within the service. Reffer to the [systemd.unit documentation](https://www.freedesktop.org/software/systemd/man/systemd.unit.html) for more information on dropins and how they work.
 
-### restart-policy.conf
+Where multiple dropins are contained within a directory, these dropins should be used mutually exclusive of each-other and the directory name denotes the name with which the dropin should be linked.
 
-The `restart-policy.conf` dropins that are provided are:
+For other dropins, a template is provided. These templates end with `.j2` and are written using the [Jinja2 templating language](http://jinja.pocoo.org/). These should be used with Jinja to produce the relevant dropin.
 
-- `restart-no.conf` never restart the service when it stops.
-- `restart-always.conf` always restart the service when it stops.
-- `restart-on-success.conf` restart the service when it terminates successfully.
-- `restart-on-failure.conf` restart the service when it terminates with any failure condition.
-- `restart-on-abnormal.conf` restart the service when it terminates abnormally (unclean signal, timeout or watchdog but not an unclean exit code).
-- `restart-on-abort.conf` restart the service when its aborted by a signal.
-- `restart-on-watchdog.conf` restart the service when its terminated by the watchdog timer.
+### restart-policy
+
+The `restart-policy` dropins that are provided are:
+
+- `restart-no` never restart the service when it stops.
+- `restart-always` always restart the service when it stops.
+- `restart-on-success` restart the service when it terminates successfully.
+- `restart-on-failure` restart the service when it terminates with any failure condition.
+- `restart-on-abnormal` restart the service when it terminates abnormally (unclean signal, timeout or watchdog but not an unclean exit code).
+- `restart-on-abort` restart the service when its aborted by a signal.
+- `restart-on-watchdog` restart the service when its terminated by the watchdog timer.
 
 All of the provided policies set `RestartSec=5` so that the service will sleep for 5 seconds between restarts.
 
@@ -47,6 +51,8 @@ Using this dropin will result in an email being sent using the `email-status@.se
 ## Units
 
 Units provide services which can be used with timers, hooks or independently. To install the units they should be symbolically linked to from the `/etc/systemd/system` directory.
+
+For some units, dropins are provided in a directory using the same name as the unit they are provided for suffixed with `.d`. For example, dropins for the `email-status@.service` are provided in the `email-status@.service.d` directory. These dropins folders follow the same format as those found in the global [dropins](#dropins) directory.
 
 ### systemctl
 
@@ -80,7 +86,7 @@ By using instance dropins, a different email can be used for specific services. 
 
 ## scripts
 
-In order to assist with some units, scripts have been provided. These are expected to exist within `/srv/common/scripts/` and so if this repo has been installed elsewhere, it will be required to make modified copies of the units provided.
+In order to assist with some units, scripts have been provided. These are expected to exist within `/srv/common/scripts` and so if this repo has been installed elsewhere, it will be required to make modified copies of the units provided.
 
 ### email-status
 
